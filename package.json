@@ -1,0 +1,17 @@
+{
+  "name": "junction",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler pages dev public --d1=DB",
+    "migrate:local": "wrangler d1 execute junction --local --file=migrations/0001_init.sql",
+    "migrate:remote": "wrangler d1 execute junction --remote --file=migrations/0001_init.sql",
+    "deploy": "wrangler pages deploy public"
+  },
+  "dependencies": {
+    "stripe": "^19.1.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.123.0"
+  }
+}
