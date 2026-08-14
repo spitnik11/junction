@@ -300,8 +300,11 @@ window.tsReset=function(a){try{if(window.turnstile&&window.tsIds[a]!=null)turnst
       </table>
     </div>
     <div class="card insight">
-      <span class="eyebrow">AI insight — wired in Hat 5</span>
-      <p class="muted" style="margin:10px 0 0">Summary of which listings convert and why, generated from real order data via the Claude API. Left as a placeholder until there's real data — no fabricated insights.</p>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <span class="eyebrow">AI insight — Workers AI</span>
+        <button class="btn btn-ghost" id="insightBtn" style="height:30px;font-size:13px">Generate</button>
+      </div>
+      <div id="insightOut" class="muted" style="margin:12px 0 0;white-space:pre-wrap">Generated from live marketplace data via Cloudflare Workers AI. Click Generate.</div>
     </div>
   </section>
 
@@ -471,6 +474,18 @@ window.tsReset=function(a){try{if(window.turnstile&&window.tsIds[a]!=null)turnst
       tb.innerHTML='<tr><td colspan="6" class="muted">Couldn\'t load results — '+esc(e.message)+'</td></tr>';
     }
   }
+
+  document.getElementById('insightBtn').addEventListener('click',async function(){
+    var out=document.getElementById('insightOut');
+    var token=null; try{token=localStorage.getItem('junction-admin');}catch(e){}
+    if(!token){out.textContent='Open the Admin table first — it prompts for the admin token.';return;}
+    this.disabled=true; out.textContent='Analyzing live data…';
+    try{
+      var d=await api('/api/insight',{headers:{'x-admin-token':token}});
+      out.textContent=pick(d.summary,d.error,'No insight returned.');
+    }catch(e){out.textContent='Couldn\'t generate — '+e.message;}
+    this.disabled=false;
+  });
 
   // ---- ONBOARD ----
   function slug(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'.').replace(/^\.|\.$/g,'')||'pro';}
