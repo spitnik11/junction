@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Junction</title>
+<style>
+  :root{
+    --canvas:#0b0c0e; --s1:#141618; --s2:#1b1e21; --hair:#23252a;
+    --ink:#f4f5f6; --muted:#a1a6ad; --subtle:#6b7178;
+    --accent:#f4f5f6; --accent-hover:#e2e4e7; --accent-ink:#0b0c0e;
+    --ring:rgba(244,245,246,.22);
+    --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI Variable Text","Segoe UI",system-ui,Roboto,"Helvetica Neue",Arial,sans-serif;
+    --font-disp:-apple-system,BlinkMacSystemFont,"Segoe UI Variable Display","Segoe UI",system-ui,Roboto,sans-serif;
+    --font-mono:ui-monospace,SFMono-Regular,"SF Mono","Cascadia Mono",Menlo,Consolas,monospace;
+  }
+  [data-theme="light"]{
+    --canvas:#f7f8f8; --s1:#ffffff; --s2:#f0f1f2; --hair:#e8e9ea;
+    --ink:#1a1c1e; --muted:#5a6067; --subtle:#8b9198;
+    --accent:#1a1c1e; --accent-hover:#34383c; --accent-ink:#f7f8f8;
+    --ring:rgba(26,28,30,.22);
+  }
+  *{box-sizing:border-box}
+  html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  body{margin:0;background:var(--canvas);color:var(--ink);font:400 16px/1.55 var(--font-sans);
+    letter-spacing:0;transition:background-color .15s ease,color .15s ease}
+  .num{font-feature-settings:"tnum";font-variant-numeric:tabular-nums}
+  a{color:inherit;text-decoration:none}
+  h1,h2,h3{font-family:var(--font-disp);font-weight:600;line-height:1.12;letter-spacing:-.02em;margin:0}
+  h1{font-size:40px} h2{font-size:28px} h3{font-size:18px;letter-spacing:-.01em}
+  .eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.02em;color:var(--subtle);text-transform:none}
+  .muted{color:var(--muted)} .subtle{color:var(--subtle)}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+
+  /* nav */
+  header.nav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--canvas) 88%,transparent);
+    backdrop-filter:none;border-bottom:1px solid var(--hair)}
+  .nav-in{max-width:1120px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:20px}
+  .brand{display:flex;align-items:center;gap:9px;font-family:var(--font-disp);font-weight:600;font-size:17px}
+  .brand .mk{width:18px;height:18px;color:var(--accent)}
+  nav.links{display:flex;gap:4px;margin-left:8px}
+  nav.links a{padding:6px 10px;border-radius:8px;font-size:14px;color:var(--muted);transition:color .15s,background-color .15s;cursor:pointer}
+  nav.links a:hover{color:var(--ink)}
+  nav.links a.active{color:var(--ink);background:var(--s1)}
+  .nav-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+
+  /* buttons */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:38px;padding:0 16px;
+    border-radius:8px;font:500 14px/1 var(--font-sans);cursor:pointer;border:1px solid transparent;
+    transition:background-color .15s,border-color .15s,color .15s,transform .15s}
+  .btn:focus-visible{outline:none;box-shadow:0 0 0 3px var(--ring)}
+  .btn-pri{background:var(--accent);color:var(--accent-ink)} .btn-pri:hover{background:var(--accent-hover)}
+  .btn-ghost{background:transparent;color:var(--ink);border-color:var(--hair)} .btn-ghost:hover{background:var(--s1)}
+  .btn-block{width:100%;height:44px}
+  .icon-btn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;
+    border:1px solid var(--hair);background:transparent;color:var(--muted);cursor:pointer;transition:color .15s,background-color .15s}
+  .icon-btn:hover{color:var(--ink);background:var(--s1)}
+  svg{display:block}
+
+  /* generic surfaces */
+  .card{background:var(--s1);border:1px solid var(--hair);border-radius:12px}
+  .pill{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 13px;border-radius:9999px;
+    border:1px solid var(--hair);background:transparent;color:var(--muted);font-size:13px;cursor:pointer;transition:.15s}
+  .pill:hover{color:var(--ink)}
+  .pill.on{background:var(--ink);color:var(--canvas);border-color:var(--ink)}
+  .rating{color:var(--muted);font-size:13px}
+  .rating b{color:var(--ink);font-weight:600}
+  .avatar{width:40px;height:40px;border-radius:9999px;background:linear-gradient(135deg,var(--s2),var(--hair));
+    border:1px solid var(--hair);flex:none;display:grid;place-items:center;color:var(--subtle);font-size:13px;font-weight:600}
+
+  /* views */
+  .view{display:none;padding:40px 0 80px} .view.active{display:block}
+  .page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:28px}
+
+  /* browse grid */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .listing{padding:18px;cursor:pointer;transition:border-color .15s,transform .15s}
+  .listing:hover{border-color:color-mix(in srgb,var(--ink) 22%,var(--hair))}
+  .listing .top{display:flex;align-items:center;gap:11px;margin-bottom:14px}
+  .listing h3{font-size:16px;font-weight:600;margin:0 0 6px}
+  .listing .foot{display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:1px solid var(--hair)}
+  .price{font-family:var(--font-disp);font-weight:600;font-size:18px}
+
+  /* listing detail */
+  .two{display:grid;grid-template-columns:1.5fr .9fr;gap:32px;align-items:start}
+  .check{list-style:none;margin:0;padding:0}
+  .check li{display:flex;gap:10px;padding:12px 0;border-top:1px solid var(--hair);color:var(--muted)}
+  .check li .ok{color:var(--accent);flex:none;margin-top:2px}
+  .order-card{position:sticky;top:84px;padding:20px}
+  .order-card .row{display:flex;align-items:center;justify-content:space-between}
+  .microcopy{font-size:13px;color:var(--subtle);line-height:1.5;margin:12px 0 0}
+
+  /* stepper */
+  .steps{list-style:none;margin:0 0 0;padding:0}
+  .steps li{display:flex;gap:14px;padding:18px 0;border-top:1px solid var(--hair)}
+  .steps li:first-child{border-top:none}
+  .step-n{width:26px;height:26px;border-radius:9999px;border:1.5px solid var(--hair);color:var(--muted);
+    display:grid;place-items:center;font-size:13px;font-weight:600;flex:none}
+  .steps li.done .step-n{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+  .steps li.now .step-n{border-color:var(--ink);color:var(--ink)}
+  .field{width:100%;background:var(--s2);border:1px solid var(--hair);border-radius:8px;color:var(--ink);
+    font:400 14px var(--font-sans);padding:10px 12px;margin:6px 0}
+  .field::placeholder{color:var(--subtle)}
+  .field:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--ring)}
+  label.lbl{font-size:13px;color:var(--muted);display:block;margin-top:14px}
+
+  /* order timeline */
+  .timeline{display:flex;margin:22px 0 30px}
+  .tl-step{flex:1;position:relative;text-align:center;font-size:13px;color:var(--subtle)}
+  .tl-step .dot{width:14px;height:14px;border-radius:9999px;border:2px solid var(--hair);background:var(--canvas);margin:0 auto 8px;position:relative;z-index:2}
+  .tl-step::before{content:"";position:absolute;top:6px;left:-50%;width:100%;height:2px;background:var(--hair);z-index:1}
+  .tl-step:first-child::before{display:none}
+  .tl-step.done .dot,.tl-step.done::before{border-color:var(--accent);background:var(--accent)}
+  .tl-step.done{color:var(--ink)}
+  .tl-step.now .dot{border-color:var(--ink)}
+  .tl-step.now{color:var(--ink)}
+  .summary .row{display:flex;justify-content:space-between;padding:7px 0;font-size:14px}
+  .summary .row.total{border-top:1px solid var(--hair);margin-top:6px;padding-top:12px}
+  .delivery{min-height:120px;background:var(--s2);border:1px solid var(--hair);border-radius:12px;padding:16px;color:var(--subtle);font-size:14px}
+
+  /* admin */
+  .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+  .tile{padding:18px}
+  .tile .k{font-family:var(--font-mono);font-size:12px;color:var(--subtle)}
+  .tile .v{font-family:var(--font-disp);font-weight:600;font-size:28px;margin-top:8px}
+  .tile .d{font-size:12px;color:var(--muted);margin-top:4px}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th{text-align:left;font-family:var(--font-mono);font-size:11px;font-weight:400;color:var(--subtle);padding:10px 12px;border-bottom:1px solid var(--hair)}
+  td{padding:12px;border-bottom:1px solid var(--hair);color:var(--muted)}
+  td b{color:var(--ink);font-weight:600}
+  .status{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:3px 9px;border-radius:9999px;border:1px solid var(--hair);color:var(--muted)}
+  .status.rel{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 40%,var(--hair))}
+  .insight{padding:18px;margin-top:24px;border-style:dashed}
+
+  .back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:14px;margin-bottom:20px;cursor:pointer}
+  .back:hover{color:var(--ink)}
+  @media(max-width:820px){.grid{grid-template-columns:1fr 1fr}.two{grid-template-columns:1fr}.tiles{grid-template-columns:1fr 1fr}.order-card{position:static}nav.links{display:none}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="nav-in">
+    <a class="brand" data-view="browse"><svg class="mk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h10M4 17h16"/><circle cx="18" cy="12" r="2.4" fill="currentColor" stroke="none"/></svg>Junction</a>
+    <nav class="links">
+      <a data-view="browse">Browse</a>
+      <a data-view="order">My orders</a>
+      <a data-view="admin">Admin</a>
+    </nav>
+    <div class="nav-right">
+      <button class="icon-btn" id="themeBtn" title="Toggle theme" aria-label="Toggle theme"></button>
+      <a class="btn btn-ghost" data-view="order">Sign in</a>
+      <a class="btn btn-pri" data-view="onboard">Become a pro</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- 1 BROWSE -->
+  <section class="view" id="v-browse">
+    <div class="page-head">
+      <div>
+        <h1>Find a vetted pro.<br>Pay safely.</h1>
+        <p class="muted" style="margin:12px 0 0;max-width:46ch">Buy a fixed-scope package. Your payment is held in escrow and only released when you approve the work.</p>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;max-width:420px">
+        <span class="pill on">All</span><span class="pill">Design</span><span class="pill">Video editing</span>
+        <span class="pill">Copywriting</span><span class="pill">Development</span><span class="pill">Consulting</span>
+      </div>
+    </div>
+    <div class="grid" id="listingGrid"></div>
+  </section>
+
+  <!-- 2 LISTING -->
+  <section class="view" id="v-listing">
+    <a class="back" data-view="browse"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 18l-6-6 6-6"/></svg>Back to browse</a>
+    <div class="two">
+      <div>
+        <span class="eyebrow">Development</span>
+        <h2 style="margin:8px 0 16px">Production-ready landing page in React</h2>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
+          <div class="avatar">MR</div>
+          <div><div style="font-weight:600">Maya R.</div><div class="rating"><b>★ 4.9</b> · 23 orders</div></div>
+        </div>
+        <p class="muted" style="max-width:60ch">A single, conversion-focused landing page built from your copy and brand. Responsive, accessible, and deployed. Clean handoff — you own the code.</p>
+        <h3 style="margin:28px 0 4px">What's included</h3>
+        <ul class="check">
+          <li><svg class="ok" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6L9 17l-5-5"/></svg>One responsive landing page (up to 5 sections)</li>
+          <li><svg class="ok" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6L9 17l-5-5"/></svg>Mobile + desktop, accessibility pass</li>
+          <li><svg class="ok" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6L9 17l-5-5"/></svg>2 rounds of revisions</li>
+          <li><svg class="ok" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 6L9 17l-5-5"/></svg>Deployed + source code handoff · 5-day turnaround</li>
+        </ul>
+      </div>
+      <aside class="card order-card">
+        <div class="row"><span class="muted">Package price</span><span class="price num">$250</span></div>
+        <a class="btn btn-pri btn-block" style="margin-top:16px" data-view="order">Hire — funds held until delivery</a>
+        <p class="microcopy">Payment is held in escrow by Stripe and released only when you approve delivery — or automatically after 5 days if you don't respond. Platform fee 10%.</p>
+        <a class="btn btn-ghost btn-block" style="margin-top:12px">Message Maya</a>
+      </aside>
+    </div>
+  </section>
+
+  <!-- 3 ONBOARD -->
+  <section class="view" id="v-onboard">
+    <div class="page-head"><div><span class="eyebrow">Pro onboarding</span><h2 style="margin-top:8px">Set up your pro profile</h2></div></div>
+    <div class="two">
+      <div class="card" style="padding:24px">
+        <label class="lbl">Display name</label><input class="field" placeholder="e.g. Maya R.">
+        <label class="lbl">Category</label><input class="field" placeholder="Development">
+        <label class="lbl">Short bio</label><textarea class="field" rows="3" placeholder="What you do and who you help…"></textarea>
+        <h3 style="margin:24px 0 4px">Your first package</h3>
+        <label class="lbl">Package title</label><input class="field" placeholder="Production-ready landing page in React">
+        <label class="lbl">Price (USD)</label><input class="field num" placeholder="250">
+        <label class="lbl">What's included</label><textarea class="field" rows="3" placeholder="One deliverable per line…"></textarea>
+      </div>
+      <aside>
+        <ol class="steps">
+          <li class="done"><span class="step-n"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg></span><div><b>Profile</b><div class="subtle" style="font-size:13px">Name, category, bio</div></div></li>
+          <li class="now"><span class="step-n">2</span><div><b>Package</b><div class="subtle" style="font-size:13px">Title, price, deliverables</div></div></li>
+          <li><span class="step-n">3</span><div><b>Connect payouts</b><div class="subtle" style="font-size:13px">Required before you can be paid</div></div></li>
+        </ol>
+        <div class="card" style="padding:18px;margin-top:16px">
+          <b>Connect payouts</b>
+          <p class="microcopy" style="margin-top:8px">Opens Stripe to verify your identity and bank. Junction never sees your bank or card details.</p>
+          <a class="btn btn-pri btn-block" style="margin-top:14px">Connect payouts with Stripe →</a>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- 4 ORDER / ESCROW -->
+  <section class="view" id="v-order">
+    <div class="page-head">
+      <div><span class="eyebrow num">Order #A1B2</span><h2 style="margin-top:8px">Production-ready landing page in React</h2></div>
+      <div style="display:flex;gap:6px">
+        <span class="pill on" id="roleClient">Client view</span><span class="pill" id="rolePro">Pro view</span>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="tl-step done"><div class="dot"></div>Paid · held</div>
+      <div class="tl-step done"><div class="dot"></div>In progress</div>
+      <div class="tl-step now"><div class="dot"></div>Delivered · review</div>
+      <div class="tl-step"><div class="dot"></div>Released · payout</div>
+    </div>
+    <div class="two">
+      <div>
+        <h3 style="margin-bottom:10px">Delivery from Maya</h3>
+        <div class="delivery">Attached: <span style="color:var(--ink)">landing-final.zip</span> · live preview link. "Here's the finished page — deployed and ready. Let me know if you'd like either revision."</div>
+        <div style="display:flex;gap:10px;margin-top:16px" id="clientActions">
+          <button class="btn btn-pri">Approve &amp; release payment</button>
+          <button class="btn btn-ghost">Request revision</button>
+        </div>
+        <p class="microcopy">Releasing transfers the payout to the pro minus the platform fee. If you take no action, funds auto-release in 5 days.</p>
+      </div>
+      <aside class="card order-card summary">
+        <h3 style="margin-bottom:12px">Summary</h3>
+        <div class="row"><span class="muted">Package</span><span class="num">$250.00</span></div>
+        <div class="row"><span class="muted">Platform fee (10%)</span><span class="num">−$25.00</span></div>
+        <div class="row total"><span>Pro receives</span><b class="num">$225.00</b></div>
+        <div style="margin-top:16px"><span class="status">● Funds held in escrow</span></div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- 5 ADMIN -->
+  <section class="view" id="v-admin">
+    <div class="page-head"><div><span class="eyebrow">Marketplace</span><h2 style="margin-top:8px">Admin dashboard</h2></div></div>
+    <div class="tiles">
+      <div class="card tile"><div class="k">GMV</div><div class="v num">$12,480</div><div class="d">+18% this week</div></div>
+      <div class="card tile"><div class="k">Take-rate revenue</div><div class="v num">$1,248</div><div class="d">10% of GMV</div></div>
+      <div class="card tile"><div class="k">Active orders</div><div class="v num">7</div><div class="d subtle" style="color:var(--subtle)">3 in escrow</div></div>
+      <div class="card tile"><div class="k">Browse → hire</div><div class="v num">3.4%</div><div class="d">+0.6pt</div></div>
+    </div>
+    <div class="card" style="overflow:hidden">
+      <table>
+        <thead><tr><th>Order</th><th>Pro</th><th>Client</th><th class="num">Amount</th><th class="num">Fee</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td><b class="num">#A1B2</b></td><td>Maya R.</td><td>Kofi A.</td><td class="num">$250</td><td class="num">$25</td><td><span class="status">held</span></td></tr>
+          <tr><td><b class="num">#A1B3</b></td><td>Jonas P.</td><td>Lena V.</td><td class="num">$120</td><td class="num">$12</td><td><span class="status rel">released</span></td></tr>
+          <tr><td><b class="num">#A1B4</b></td><td>Priya S.</td><td>Dan M.</td><td class="num">$500</td><td class="num">$50</td><td><span class="status">in progress</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card insight">
+      <span class="eyebrow">AI insight — wired in Hat 5</span>
+      <p class="muted" style="margin:10px 0 0">Summary of which listings convert and why, generated from real order data via the Claude API. Left as a placeholder until there's real data — no fabricated insights.</p>
+    </div>
+  </section>
+
+</main>
+
+<script>
+(function(){
+  // ---- data (mock; Hat 3 replaces with /api/listings) ----
+  var listings=[
+    {who:"Maya R.",ini:"MR",cat:"Development",title:"Production-ready landing page in React",price:250,rate:"4.9",n:23},
+    {who:"Jonas P.",ini:"JP",cat:"Video editing",title:"Short-form vertical edit (up to 60s)",price:120,rate:"5.0",n:8},
+    {who:"Priya S.",ini:"PS",cat:"Design",title:"Brand identity starter kit",price:500,rate:"4.7",n:41},
+    {who:"Dan M.",ini:"DM",cat:"Copywriting",title:"Landing page copy that converts",price:90,rate:"4.8",n:12},
+    {who:"Lena V.",ini:"LV",cat:"Consulting",title:"1-week go-to-market audit",price:340,rate:"4.9",n:30},
+    {who:"Kofi A.",ini:"KA",cat:"Development",title:"Bug-fix sprint (5 issues)",price:180,rate:"4.6",n:5}
+  ];
+  var g=document.getElementById('listingGrid');
+  g.innerHTML=listings.map(function(l){return '<article class="card listing" data-view="listing">'
+    +'<div class="top"><div class="avatar">'+l.ini+'</div><div><div style="font-weight:600;font-size:14px">'+l.who+'</div><div class="eyebrow">'+l.cat+'</div></div></div>'
+    +'<h3>'+l.title+'</h3>'
+    +'<div class="foot"><span class="price num">$'+l.price+'</span><span class="rating"><b>★ '+l.rate+'</b> ('+l.n+')</span></div>'
+    +'</article>';}).join('');
+
+  // ---- view router ----
+  var views={browse:'v-browse',listing:'v-listing',onboard:'v-onboard',order:'v-order',admin:'v-admin'};
+  function show(name){
+    if(!views[name])name='browse';
+    Object.keys(views).forEach(function(k){document.getElementById(views[k]).classList.toggle('active',k===name);});
+    document.querySelectorAll('nav.links a').forEach(function(a){a.classList.toggle('active',a.dataset.view===name);});
+    if(location.hash!=='#'+name)history.replaceState(null,'','#'+name);
+    window.scrollTo(0,0);
+  }
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('[data-view]'); if(!t)return; e.preventDefault(); show(t.dataset.view);
+  });
+  window.addEventListener('hashchange',function(){show(location.hash.slice(1));});
+  show(location.hash.slice(1)||'browse');
+
+  // ---- client/pro toggle ----
+  var rc=document.getElementById('roleClient'),rp=document.getElementById('rolePro'),ca=document.getElementById('clientActions');
+  rc.onclick=function(){rc.classList.add('on');rp.classList.remove('on');ca.style.display='flex';};
+  rp.onclick=function(){rp.classList.add('on');rc.classList.remove('on');ca.style.display='none';};
+
+  // ---- theme toggle ----
+  var sun='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+  var moon='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1111.2 3 7 7 0 0021 12.8z"/></svg>';
+  var btn=document.getElementById('themeBtn'), root=document.documentElement;
+  function applyTheme(t){root.setAttribute('data-theme',t);btn.innerHTML=t==='dark'?moon:sun;try{localStorage.setItem('junction-theme',t);}catch(e){}}
+  var saved; try{saved=localStorage.getItem('junction-theme');}catch(e){}
+  applyTheme(saved||'dark');
+  btn.onclick=function(){applyTheme(root.getAttribute('data-theme')==='dark'?'light':'dark');};
+})();
+</script>
+</body>
+</html>

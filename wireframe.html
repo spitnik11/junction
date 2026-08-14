@@ -1,0 +1,209 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Junction — Wireframe (Hat 1, greybox)</title>
+<style>
+  :root { --line:#9aa0a6; --fill:#e9eaec; --fill2:#f4f5f6; --ink:#3c4043; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:14px/1.45 -apple-system,Segoe UI,Roboto,sans-serif; color:var(--ink); background:#fff; }
+  header.nav { position:sticky; top:0; background:#fff; border-bottom:1px solid var(--line); padding:10px 16px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; z-index:5; }
+  header.nav b { font-family:ui-monospace,monospace; margin-right:8px; }
+  header.nav a { font-family:ui-monospace,monospace; font-size:12px; text-decoration:none; color:var(--ink); border:1px solid var(--line); border-radius:6px; padding:3px 8px; }
+  .screen { max-width:1000px; margin:28px auto; padding:0 16px; }
+  .frame { border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+  .tag { font-family:ui-monospace,monospace; font-size:11px; letter-spacing:.04em; text-transform:uppercase; color:#fff; background:var(--ink); display:inline-block; padding:3px 8px; border-radius:0 0 8px 0; }
+  .bar { display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-bottom:1px solid var(--line); background:var(--fill2); }
+  .body { padding:16px; }
+  .box { background:var(--fill); border:1px dashed var(--line); border-radius:8px; }
+  .ph { color:#7a7f85; font-family:ui-monospace,monospace; font-size:12px; }
+  .btn { display:inline-block; background:var(--ink); color:#fff; border-radius:8px; padding:9px 14px; font-weight:600; }
+  .btn.ghost { background:#fff; color:var(--ink); border:1px solid var(--line); }
+  .chips span { display:inline-block; border:1px solid var(--line); border-radius:999px; padding:4px 12px; margin:0 6px 6px 0; font-size:12px; background:#fff; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px; }
+  .card { border:1px solid var(--line); border-radius:10px; padding:12px; }
+  .avatar { width:40px; height:40px; border-radius:50%; background:var(--fill); border:1px dashed var(--line); }
+  .row { display:flex; gap:12px; align-items:center; }
+  .line { height:10px; background:var(--fill); border-radius:4px; }
+  .col2 { display:grid; grid-template-columns:1.4fr 1fr; gap:18px; }
+  .field { border:1px solid var(--line); border-radius:8px; padding:10px 12px; background:#fff; color:#7a7f85; font-family:ui-monospace,monospace; font-size:12px; margin:6px 0; }
+  .timeline { display:flex; gap:0; margin:14px 0; }
+  .step { flex:1; text-align:center; font-size:12px; }
+  .dot { width:16px; height:16px; border-radius:50%; border:2px solid var(--line); margin:0 auto 6px; background:#fff; }
+  .step.done .dot { background:var(--ink); border-color:var(--ink); }
+  .step.now .dot { background:var(--fill); border-color:var(--ink); }
+  .connect { display:flex; gap:8px; height:2px; background:var(--line); margin-top:7px; }
+  .tiles { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  .tile { border:1px solid var(--line); border-radius:10px; padding:14px; }
+  .tile .big { font-size:24px; font-weight:700; }
+  table { width:100%; border-collapse:collapse; margin-top:12px; font-size:13px; }
+  th,td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--fill); }
+  th { font-family:ui-monospace,monospace; font-size:11px; text-transform:uppercase; color:#7a7f85; }
+  .note { max-width:1000px; margin:0 auto 24px; padding:0 16px; color:#7a7f85; font-family:ui-monospace,monospace; font-size:12px; }
+  h4 { margin:0 0 8px; }
+  .toggle span { border:1px solid var(--line); padding:4px 10px; font-family:ui-monospace,monospace; font-size:12px; border-radius:6px; }
+  .toggle span.on { background:var(--ink); color:#fff; }
+</style>
+
+<header class="nav">
+  <b>JUNCTION · wireframe</b>
+  <a href="#s1">1 Browse</a>
+  <a href="#s2">2 Listing</a>
+  <a href="#s3">3 Pro onboarding</a>
+  <a href="#s4">4 Order / escrow</a>
+  <a href="#s5">5 Admin</a>
+</header>
+
+<p class="note">Hat 1 greybox — layout &amp; flow only, no visual design. The money loop: browse → hire (funds held via Stripe Connect) → pro delivers → client releases → payout minus platform fee.</p>
+
+<!-- 1 BROWSE -->
+<section class="screen" id="s1">
+  <div class="frame">
+    <span class="tag">Screen 1 · Browse</span>
+    <div class="bar">
+      <div class="row"><div class="box" style="width:110px;height:22px"></div><span class="ph">logo</span></div>
+      <div class="row"><span class="ph">search…</span><span class="btn ghost">Sign in</span><span class="btn">Become a pro</span></div>
+    </div>
+    <div class="body">
+      <div class="chips"><span>All</span><span>Design</span><span>Video editing</span><span>Copywriting</span><span>Dev</span><span>Consulting</span></div>
+      <div class="grid" style="margin-top:12px">
+        <!-- 6 listing cards -->
+        <div class="card"><div class="row"><div class="avatar"></div><div><div class="line" style="width:90px"></div></div></div>
+          <div class="line" style="width:100%;margin:12px 0 6px"></div><div class="line" style="width:70%"></div>
+          <div class="row" style="justify-content:space-between;margin-top:12px"><b>$250</b><span class="ph">★ 4.9 (23)</span></div></div>
+        <div class="card"><div class="row"><div class="avatar"></div><div class="line" style="width:90px"></div></div>
+          <div class="line" style="width:100%;margin:12px 0 6px"></div><div class="line" style="width:60%"></div>
+          <div class="row" style="justify-content:space-between;margin-top:12px"><b>$120</b><span class="ph">★ 5.0 (8)</span></div></div>
+        <div class="card"><div class="row"><div class="avatar"></div><div class="line" style="width:90px"></div></div>
+          <div class="line" style="width:100%;margin:12px 0 6px"></div><div class="line" style="width:80%"></div>
+          <div class="row" style="justify-content:space-between;margin-top:12px"><b>$500</b><span class="ph">★ 4.7 (41)</span></div></div>
+        <div class="card"><div class="row"><div class="avatar"></div><div class="line" style="width:90px"></div></div>
+          <div class="line" style="width:100%;margin:12px 0 6px"></div><div class="line" style="width:65%"></div>
+          <div class="row" style="justify-content:space-between;margin-top:12px"><b>$90</b><span class="ph">★ 4.8 (12)</span></div></div>
+        <div class="card"><div class="row"><div class="avatar"></div><div class="line" style="width:90px"></div></div>
+          <div class="line" style="width:100%;margin:12px 0 6px"></div><div class="line" style="width:75%"></div>
+          <div class="row" style="justify-content:space-between;margin-top:12px"><b>$340</b><span class="ph">★ 4.9 (30)</span></div></div>
+        <div class="card"><div class="row"><div class="avatar"></div><div class="line" style="width:90px"></div></div>
+          <div class="line" style="width:100%;margin:12px 0 6px"></div><div class="line" style="width:55%"></div>
+          <div class="row" style="justify-content:space-between;margin-top:12px"><b>$180</b><span class="ph">★ 4.6 (5)</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 LISTING DETAIL -->
+<section class="screen" id="s2">
+  <div class="frame">
+    <span class="tag">Screen 2 · Listing detail</span>
+    <div class="body col2">
+      <div>
+        <h4>Package title placeholder</h4>
+        <div class="row" style="margin:8px 0 16px"><div class="avatar"></div><div><div class="line" style="width:120px;margin-bottom:6px"></div><span class="ph">vetted pro · ★ 4.9 (23)</span></div></div>
+        <div class="box" style="height:120px;margin-bottom:16px"><span class="ph" style="padding:10px;display:block">scope / deliverables description</span></div>
+        <b>What's included</b>
+        <div class="field">✓ deliverable one</div>
+        <div class="field">✓ deliverable two</div>
+        <div class="field">✓ 2 revisions · 5-day turnaround</div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="row" style="justify-content:space-between"><span class="ph">Price</span><b style="font-size:22px">$250</b></div>
+          <div class="line" style="width:100%;margin:14px 0"></div>
+          <a class="btn" style="display:block;text-align:center">Hire — funds held until delivery</a>
+          <p class="ph" style="margin:10px 0 0">Payment held in escrow via Stripe. Released only when you approve delivery. Platform fee 10%.</p>
+          <div class="btn ghost" style="display:block;text-align:center;margin-top:10px">Message pro</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 PRO ONBOARDING -->
+<section class="screen" id="s3">
+  <div class="frame">
+    <span class="tag">Screen 3 · Pro onboarding</span>
+    <div class="body">
+      <h4>Set up your pro profile</h4>
+      <div class="col2">
+        <div>
+          <div class="field">Display name</div>
+          <div class="field">Category ▾</div>
+          <div class="field" style="height:70px">Bio…</div>
+          <b>Create your first package</b>
+          <div class="field">Package title</div>
+          <div class="field">Price ($)</div>
+          <div class="field" style="height:60px">What's included…</div>
+        </div>
+        <div>
+          <div class="card">
+            <b>Step 1 · Profile</b><span class="ph" style="float:right">done</span>
+            <div class="line" style="width:100%;margin:10px 0"></div>
+            <b>Step 2 · Package</b><span class="ph" style="float:right">in progress</span>
+            <div class="line" style="width:100%;margin:10px 0"></div>
+            <b>Step 3 · Connect payouts</b>
+            <p class="ph" style="margin:8px 0">Required before you can be paid. Opens Stripe to verify identity &amp; bank.</p>
+            <a class="btn" style="display:block;text-align:center">Connect payouts (Stripe) →</a>
+          </div>
+          <p class="ph" style="margin-top:12px">Stripe Connect Express handles KYC/identity. We never see bank or card data.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 ORDER / ESCROW -->
+<section class="screen" id="s4">
+  <div class="frame">
+    <span class="tag">Screen 4 · Order / escrow status</span>
+    <div class="bar"><b>Order #A1B2</b>
+      <span class="toggle"><span class="on">Client view</span> <span>Pro view</span></span>
+    </div>
+    <div class="body">
+      <div class="timeline">
+        <div class="step done"><div class="dot"></div>Paid<br><span class="ph">held</span></div>
+        <div class="step done"><div class="dot"></div>In progress</div>
+        <div class="step now"><div class="dot"></div>Delivered<br><span class="ph">review</span></div>
+        <div class="step"><div class="dot"></div>Released<br><span class="ph">payout</span></div>
+      </div>
+      <div class="col2" style="margin-top:16px">
+        <div>
+          <div class="box" style="height:110px"><span class="ph" style="padding:10px;display:block">delivery files / message from pro</span></div>
+          <div class="row" style="margin-top:14px;gap:10px">
+            <a class="btn">Approve &amp; release payment</a>
+            <a class="btn ghost">Request revision</a>
+          </div>
+          <p class="ph" style="margin-top:10px">Client releases escrow → Stripe transfers to pro minus platform fee.</p>
+        </div>
+        <div class="card">
+          <b>Summary</b>
+          <div class="row" style="justify-content:space-between;margin-top:10px"><span class="ph">Package</span><span>$250.00</span></div>
+          <div class="row" style="justify-content:space-between"><span class="ph">Platform fee (10%)</span><span>$25.00</span></div>
+          <div class="row" style="justify-content:space-between"><span class="ph">Pro receives</span><b>$225.00</b></div>
+          <div class="line" style="width:100%;margin:12px 0"></div>
+          <span class="ph">Status: funds held in escrow</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 ADMIN -->
+<section class="screen" id="s5">
+  <div class="frame">
+    <span class="tag">Screen 5 · Admin dashboard</span>
+    <div class="body">
+      <div class="tiles">
+        <div class="tile"><span class="ph">GMV</span><div class="big">$12,480</div></div>
+        <div class="tile"><span class="ph">Take-rate revenue</span><div class="big">$1,248</div></div>
+        <div class="tile"><span class="ph">Active orders</span><div class="big">7</div></div>
+        <div class="tile"><span class="ph">Browse→hire conv.</span><div class="big">3.4%</div></div>
+      </div>
+      <div class="box" style="height:120px;margin:16px 0"><span class="ph" style="padding:10px;display:block">revenue over time chart</span></div>
+      <table>
+        <tr><th>Order</th><th>Pro</th><th>Client</th><th>Amount</th><th>Fee</th><th>Status</th></tr>
+        <tr><td>#A1B2</td><td>—</td><td>—</td><td>$250</td><td>$25</td><td>held</td></tr>
+        <tr><td>#A1B3</td><td>—</td><td>—</td><td>$120</td><td>$12</td><td>released</td></tr>
+        <tr><td>#A1B4</td><td>—</td><td>—</td><td>$500</td><td>$50</td><td>in progress</td></tr>
+      </table>
+      <p class="ph" style="margin-top:14px">AI insight panel (Hat 5): "which listings convert &amp; why" summary goes here.</p>
+    </div>
+  </div>
+</section>

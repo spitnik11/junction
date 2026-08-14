@@ -1,0 +1,22 @@
+# secrets — NEVER commit
+.dev.vars
+.dev.vars.*
+*.env
+.env*
+
+# wrangler / cloudflare
+.wrangler/
+dist/
+
+# node
+node_modules/
+
+# local db / scratch
+*.sqlite
+*.sqlite3
+local.db
+.playwright-mcp/
+
+# os
+Thumbs.db
+.DS_Store
