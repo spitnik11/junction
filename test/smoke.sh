@@ -8,7 +8,9 @@ code(){ curl -s -o /dev/null -w "%{http_code}" "$@"; }
 
 [ "$(curl -s "$B/api/listings" | grep -c '"id"')" -ge 1 ] && pass "GET /api/listings returns seeded listings"
 [ "$(code "$B/api/listings/l_maya")" = 200 ] && pass "GET /api/listings/:id"
-[ "$(code "$B/api/results")" = 200 ] && pass "GET /api/results"
+TOK="${ADMIN_TOKEN:-dev-admin-token}"
+[ "$(code "$B/api/results")" = 401 ] && pass "GET /api/results unauth → 401"
+[ "$(code -H "x-admin-token: $TOK" "$B/api/results")" = 200 ] && pass "GET /api/results with token → 200"
 [ "$(code "$B/api/orders/o_none")" = 401 ] && pass "GET /api/orders/:id unauth → 401"
 
 curl -s -c /tmp/j_cli.txt -X POST "$B/api/session" -H 'content-type: application/json' \

@@ -25,6 +25,9 @@ export async function onRequestPost({ env, request, data }) {
   const price = Number(price_cents);
   if (!title || !category || !Number.isInteger(price) || price <= 0)
     return err('title, category, and positive integer price_cents are required');
+  if (price > 100000000) return err('price_cents too large');            // cap at $1,000,000
+  if (String(title).length > 120 || String(category).length > 40 || String(includes || '').length > 2000)
+    return err('field too long');
 
   const listing = {
     id: genId('l'), pro_user_id: user.id, title, category,

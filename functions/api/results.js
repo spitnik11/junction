@@ -1,7 +1,11 @@
-// GET /api/results — admin metrics. Validated SQL per CONTRACT.md.
-import { json } from '../_lib/util.js';
+// GET /api/results — admin metrics. Gated by ADMIN_TOKEN (default-deny) since it
+// exposes GMV/revenue and order rows with names. Send header: x-admin-token.
+import { json, err } from '../_lib/util.js';
 
-export async function onRequestGet({ env }) {
+export async function onRequestGet({ env, request }) {
+  const token = request.headers.get('x-admin-token');
+  if (!env.ADMIN_TOKEN || token !== env.ADMIN_TOKEN) return err('admin only', 401);
+
   const m = await env.DB.prepare(
     `SELECT
        COALESCE(SUM(CASE WHEN status IN ('held','delivered','released') THEN amount_cents END),0) AS gmv_cents,

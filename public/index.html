@@ -296,7 +296,9 @@
   function initials(name){return String(name||'?').trim().split(/\s+/).map(function(w){return w[0]||'';}).slice(0,2).join('').toUpperCase()||'?';}
   function pick(){for(var i=0;i<arguments.length;i++){if(arguments[i]!=null)return arguments[i];}return null;}
   async function api(path,opts){
-    var r=await fetch(path,Object.assign({credentials:'same-origin',headers:{'content-type':'application/json'}},opts||{}));
+    opts=opts||{};
+    var headers=Object.assign({'content-type':'application/json'},opts.headers||{});
+    var r=await fetch(path,Object.assign({credentials:'same-origin'},opts,{headers:headers}));
     var d=null; try{d=await r.json();}catch(e){}
     if(!r.ok)throw new Error((d&&d.error)||('HTTP '+r.status));
     return d;
@@ -424,8 +426,11 @@
   async function loadAdmin(){
     var tb=document.getElementById('adminRows');
     tb.innerHTML='<tr><td colspan="6" class="muted">Loading…</td></tr>';
+    var token=null; try{token=localStorage.getItem('junction-admin');}catch(e){}
+    if(!token){token=prompt('Admin token');if(token){try{localStorage.setItem('junction-admin',token);}catch(e){}}}
+    if(!token){tb.innerHTML='<tr><td colspan="6" class="muted">Admin token required.</td></tr>';return;}
     try{
-      var r=await api('/api/results');
+      var r=await api('/api/results',{headers:{'x-admin-token':token}});
       document.getElementById('kGmv').textContent=money(r.gmv_cents);
       document.getElementById('kRev').textContent=money(r.revenue_cents);
       document.getElementById('kActive').textContent=pick(r.active_orders,0);
@@ -442,6 +447,7 @@
           +'<td><span class="'+cls+'">'+esc(st)+'</span></td></tr>';
       }).join(''):'<tr><td colspan="6" class="muted">No orders yet.</td></tr>';
     }catch(e){
+      try{localStorage.removeItem('junction-admin');}catch(e2){}   // clear bad token → re-prompt next time
       ['kGmv','kRev','kActive','kEscrow'].forEach(function(id){document.getElementById(id).textContent='—';});
       tb.innerHTML='<tr><td colspan="6" class="muted">Couldn\'t load results — '+esc(e.message)+'</td></tr>';
     }

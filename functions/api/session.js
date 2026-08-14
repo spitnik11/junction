@@ -6,6 +6,9 @@ export async function onRequestPost({ env, request }) {
   const { email, name, role } = await request.json().catch(() => ({}));
   if (!email || !name || (role !== 'client' && role !== 'pro'))
     return err('email, name, and role (client|pro) are required');
+  if (typeof email !== 'string' || email.length > 160 || !email.includes('@'))
+    return err('invalid email');
+  if (typeof name !== 'string' || name.length > 80) return err('invalid name');
 
   const existing = await env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(email).first();
   let user;
