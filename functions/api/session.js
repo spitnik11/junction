@@ -1,9 +1,13 @@
 // POST /api/session — dev login: upsert user by email, set signed session cookie, return user.
 import { json, err, genId, now } from '../_lib/util.js';
 import { signSession, setCookie } from '../_lib/session.js';
+import { verifyTurnstile } from '../_lib/turnstile.js';
 
 export async function onRequestPost({ env, request }) {
-  const { email, name, role } = await request.json().catch(() => ({}));
+  const b = await request.json().catch(() => ({}));
+  const { email, name, role } = b;
+  if (!(await verifyTurnstile(env, b['cf-turnstile-response'], request.headers.get('cf-connecting-ip'), 'signup')))
+    return err('bot check failed', 403);
   if (!email || !name || (role !== 'client' && role !== 'pro'))
     return err('email, name, and role (client|pro) are required');
   if (typeof email !== 'string' || email.length > 160 || !email.includes('@'))

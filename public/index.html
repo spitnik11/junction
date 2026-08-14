@@ -4,6 +4,23 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Junction</title>
+<script>
+window.SITEKEY='0x4AAAAAAEQHqI0JPb-sqTGZ';
+window.tsIds={};
+window.onloadTurnstile=function(){
+  function mount(anchorId,action){
+    var a=document.getElementById(anchorId); if(!a||!window.turnstile)return;
+    var c=document.createElement('div'); c.style.margin='10px 0';
+    a.parentNode.insertBefore(c,a);
+    try{window.tsIds[action]=turnstile.render(c,{sitekey:window.SITEKEY,action:action});}catch(e){}
+  }
+  function go(){mount('createPkgBtn','signup');mount('hireBtn','checkout');}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go);else go();
+};
+window.tsGet=function(a){try{return (window.turnstile&&window.tsIds[a]!=null)?turnstile.getResponse(window.tsIds[a]):'';}catch(e){return'';}};
+window.tsReset=function(a){try{if(window.turnstile&&window.tsIds[a]!=null)turnstile.reset(window.tsIds[a]);}catch(e){}};
+</script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstile&render=explicit" async defer></script>
 <style>
   :root{
     --canvas:#0b0c0e; --s1:#141618; --s2:#1b1e21; --hair:#23252a;
@@ -368,7 +385,7 @@
     if(!currentListingId)return;
     var old=hireBtn.textContent; hireBtn.textContent='Redirecting…';
     try{
-      var d=await api('/api/checkout',{method:'POST',body:JSON.stringify({listing_id:currentListingId})});
+      var d=await api('/api/checkout',{method:'POST',body:JSON.stringify({listing_id:currentListingId,'cf-turnstile-response':window.tsGet('checkout')})});
       if(d&&d.order_id)try{sessionStorage.setItem('junction-order',d.order_id);currentOrderId=d.order_id;}catch(e){}
       var url=pick(d&&d.url,d&&d.session&&d.session.url);
       if(url)window.location=url; else throw new Error('No checkout URL returned');
@@ -456,7 +473,9 @@
   // ---- ONBOARD ----
   function slug(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'.').replace(/^\.|\.$/g,'')||'pro';}
   async function signInAsPro(name){
-    return api('/api/session',{method:'POST',body:JSON.stringify({name:name||'Pro',email:slug(name)+'@junction.dev',role:'pro'})});
+    var r=await api('/api/session',{method:'POST',body:JSON.stringify({name:name||'Pro',email:slug(name)+'@junction.dev',role:'pro','cf-turnstile-response':window.tsGet('signup')})});
+    window.tsReset('signup');
+    return r;
   }
   document.getElementById('createPkgBtn').addEventListener('click',async function(){
     var msg=document.getElementById('onboardMsg');
