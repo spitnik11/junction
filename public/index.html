@@ -7,16 +7,18 @@
 <script>
 window.SITEKEY='0x4AAAAAAEQHqI0JPb-sqTGZ';
 window.tsIds={};
-window.onloadTurnstile=function(){
-  function mount(anchorId,action){
-    var a=document.getElementById(anchorId); if(!a||!window.turnstile)return;
-    var c=document.createElement('div'); c.style.margin='10px 0';
-    a.parentNode.insertBefore(c,a);
-    try{window.tsIds[action]=turnstile.render(c,{sitekey:window.SITEKEY,action:action});}catch(e){}
-  }
-  function go(){mount('createPkgBtn','signup');mount('hireBtn','checkout');}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go);else go();
+window._tsAnchor={signup:'createPkgBtn',checkout:'hireBtn'};
+// Mount lazily — Turnstile won't render inside a display:none view, so mount only
+// when the view is visible (called by the router). Safe to call repeatedly.
+window.tsMount=function(action){
+  if(!window.turnstile || window.tsIds[action]!=null) return;
+  var a=document.getElementById(window._tsAnchor[action]);
+  if(!a || a.offsetParent===null) return;            // anchor missing or not visible yet
+  var c=document.createElement('div'); c.style.margin='10px 0';
+  a.parentNode.insertBefore(c,a);
+  try{window.tsIds[action]=turnstile.render(c,{sitekey:window.SITEKEY,action:action});}catch(e){}
 };
+window.onloadTurnstile=function(){ window.tsMount('signup'); window.tsMount('checkout'); };
 window.tsGet=function(a){try{return (window.turnstile&&window.tsIds[a]!=null)?turnstile.getResponse(window.tsIds[a]):'';}catch(e){return'';}};
 window.tsReset=function(a){try{if(window.turnstile&&window.tsIds[a]!=null)turnstile.reset(window.tsIds[a]);}catch(e){}};
 </script>
@@ -511,9 +513,10 @@ window.tsReset=function(a){try{if(window.turnstile&&window.tsIds[a]!=null)turnst
     document.querySelectorAll('nav.links a').forEach(function(a){a.classList.toggle('active',a.dataset.view===name);});
     if(location.hash!=='#'+name)history.replaceState(null,'','#'+name);
     if(name==='browse')loadBrowse(currentCat);
-    else if(name==='listing')loadListing(currentListingId);
+    else if(name==='listing'){loadListing(currentListingId);if(window.tsMount)window.tsMount('checkout');}
     else if(name==='order')loadOrder();
     else if(name==='admin')loadAdmin();
+    if(name==='onboard'&&window.tsMount)window.tsMount('signup');
     window.scrollTo(0,0);
   }
   document.addEventListener('click',function(e){
