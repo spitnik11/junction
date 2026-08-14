@@ -26,6 +26,12 @@ export async function onRequestPost({ env, request }) {
       .bind(user.id, user.role, user.name, user.email, user.created_at).run();
   }
 
+  // Ensure a pros row exists so payout onboarding / listings work for this seller.
+  if (role === 'pro') {
+    await env.DB.prepare("INSERT OR IGNORE INTO pros (user_id, category, bio, payouts_enabled) VALUES (?, '', '', 0)")
+      .bind(user.id).run();
+  }
+
   const cookie = setCookie(await signSession(user.id, env.SESSION_SECRET));
   return json(user, 200, { 'Set-Cookie': cookie });
 }
